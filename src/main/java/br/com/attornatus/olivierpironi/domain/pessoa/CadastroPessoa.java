@@ -1,8 +1,8 @@
 package br.com.attornatus.olivierpironi.domain.pessoa;
 
 import br.com.attornatus.olivierpironi.domain.endereco.CadastroEndereco;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 public record CadastroPessoa(
 		
@@ -10,6 +10,6 @@ public record CadastroPessoa(
 		String nome,
 		@NotBlank
 		String dataNascimento,
-		@NotNull
+		@Valid
 		CadastroEndereco enderecoPrincipal) {
 }

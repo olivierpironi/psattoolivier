@@ -32,7 +32,7 @@ public class Pessoa {
 	private Long id;
 	private String nome;
 	private LocalDate dataNascimento;
-	@OneToOne(cascade = CascadeType.PERSIST)
+	@OneToOne(cascade = CascadeType.ALL)
 	private Endereco enderecoPrincipal;
 	@OneToMany(cascade = CascadeType.ALL)
 	@ElementCollection(targetClass = Endereco.class)

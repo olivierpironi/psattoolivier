@@ -31,7 +31,7 @@ public class PessoaController {
 
 	@PostMapping("/cadastro")
 	@Transactional
-	public ResponseEntity<DetalhaPessoa> criarPessoa(@RequestBody @Valid CadastroPessoa dados) {
+	public ResponseEntity<DetalhaPessoa> criarPessoa(@RequestBody @Valid CadastroPessoa dados) { //TODO RETORNAR FIELDS DO ENDEREÇO QUE NÃO FORAM VALIDADOS
 		var pessoa = pessoaService.cadastrar(dados);
 		return ResponseEntity.created(URI.create(pessoa.getId().toString())).body(new DetalhaPessoa(pessoa));
 	}

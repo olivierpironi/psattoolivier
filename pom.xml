@@ -46,6 +46,11 @@
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
+            <groupId>org.h2</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.0.20061103</version>
+        </dependency>
+		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
@@ -86,6 +91,12 @@
 			<version>2.2.8</version>
 		</dependency>
 	</dependencies>
+	<repositories>
+        <repository>
+            <id>Seasar</id>
+            <url>https://www.seasar.org/maven/maven2/</url>
+        </repository>
+    </repositories>
 	<build>
 		<plugins>
 			<plugin>

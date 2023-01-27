@@ -53,8 +53,7 @@ public class PessoaService {
 	
 	public DetalhaPessoa atualizarEnderecoPrincipal(Long id, @Valid CadastroEndereco dados) {
 		Pessoa pessoa = pessoaRepository.findById(id).orElseThrow(() -> new PessoaNaoEncontradaException("Pessoa com o ID especificado não encontrada"));
-		System.err.println(pessoa.getListaDeEnderecos());
-		Optional<Endereco> endereco = pessoa.getListaDeEnderecos().stream().filter(e -> e.getId().equals(simularId(dados))).findFirst();
+		Optional<Endereco> endereco = pessoa.getListaDeEnderecos().stream().filter(e -> e.equals(new Endereco(dados))).findFirst();
 		if (endereco.isPresent()) {
 			pessoa.setEnderecoPrincipal(endereco.get());
 			return new DetalhaPessoa(pessoa);
@@ -76,19 +75,15 @@ public class PessoaService {
 		if(pessoaOptional.isEmpty()) {throw new NoSuchElementException();}
 		Pessoa pessoa = pessoaOptional.get();
 		List<Endereco> lista = pessoa.getListaDeEnderecos();
-		
-		Optional<Endereco> opEndereco = enderecoRepository.findById((simularId(dados)));
-//		if(!opEndereco.isEmpty()) {
-//			lista.add(opEndereco.get());
-//			return lista.stream().map(DetalhaEndereco::new).toList();
-//		}
 		Endereco e = new Endereco(dados);
-		if (!lista.contains(e)) {
-			lista.add(e);
-			return lista.stream().map(DetalhaEndereco::new).toList();
+		 
+			if (!lista.contains(e)) {
+				lista.add(e);
+				return lista.stream().map(DetalhaEndereco::new).toList();
+			}
+			throw new EntidadeExisteException("Endereço já cadastrado para este cliente.");
 		}
-		throw new EntidadeExisteException("Endereço já cadastrado para este cliente.");
-	}
+			
 	
 	public List<DetalhaPessoa> getListaClientes() {
 		List<DetalhaPessoa> list = pessoaRepository.findAll().stream().map(DetalhaPessoa::new).toList();
