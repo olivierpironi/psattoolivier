@@ -7,19 +7,20 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.com.attornatus.olivierpironi.domain.endereco.CadastroEndereco;
 import br.com.attornatus.olivierpironi.domain.endereco.DetalhaEndereco;
 import br.com.attornatus.olivierpironi.domain.endereco.Endereco;
-import br.com.attornatus.olivierpironi.domain.exception.EnderecoNaoCadastrado;
+import br.com.attornatus.olivierpironi.domain.exception.EnderecoNaoCadastradoException;
 import br.com.attornatus.olivierpironi.domain.exception.EntidadeExisteException;
 import br.com.attornatus.olivierpironi.domain.exception.PessoaNaoEncontradaException;
 import br.com.attornatus.olivierpironi.domain.pessoa.AtualizarPessoa;
 import br.com.attornatus.olivierpironi.domain.pessoa.CadastroPessoa;
 import br.com.attornatus.olivierpironi.domain.pessoa.DetalhaPessoa;
 import br.com.attornatus.olivierpironi.domain.pessoa.Pessoa;
-import br.com.attornatus.olivierpironi.infra.repository.EnderecoRepository;
 import br.com.attornatus.olivierpironi.infra.repository.PessoaRepository;
 import jakarta.validation.Valid;
 import net.jpountz.xxhash.XXHashFactory;
@@ -29,8 +30,6 @@ public class PessoaService {
 
 	@Autowired
 	private PessoaRepository pessoaRepository;
-	@Autowired
-	private EnderecoRepository enderecoRepository;
 
 	private DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
@@ -58,7 +57,7 @@ public class PessoaService {
 			pessoa.setEnderecoPrincipal(endereco.get());
 			return new DetalhaPessoa(pessoa);
 		} else {
-			throw new EnderecoNaoCadastrado("Endereço não cadastrado para o cliente.");
+			throw new EnderecoNaoCadastradoException("Endereço não cadastrado para o cliente.");
 		}
 
 	}
@@ -66,8 +65,7 @@ public class PessoaService {
 	public int simularId(CadastroEndereco dados) {
 		XXHashFactory factory = XXHashFactory.fastestInstance();
 		byte[] bytes = (dados.logradouro() + dados.cep() + dados.numero() + dados.cidade()).getBytes();
-		int hash = factory.hash32().hash(bytes, 0, bytes.length, 0);
-		return hash;
+		return factory.hash32().hash(bytes, 0, bytes.length, 0);
 	}
 
 	public List<DetalhaEndereco> cadastrarEndereco(Long id, @Valid CadastroEndereco dados) {
@@ -88,7 +86,15 @@ public class PessoaService {
 	public List<DetalhaPessoa> getListaClientes() {
 		List<DetalhaPessoa> list = pessoaRepository.findAll().stream().map(DetalhaPessoa::new).toList();
 		if(list.isEmpty()) {
-			throw new NoSuchElementException(); //TODO garantir teste disso
+			throw new NoSuchElementException();
+		}
+		return list;
+	}
+	
+	public Page<DetalhaPessoa> getPaginaClientes(Pageable pagina) {
+		Page<DetalhaPessoa> list = pessoaRepository.findAll(pagina).map(DetalhaPessoa::new);
+		if(list.isEmpty()) {
+			throw new NoSuchElementException();
 		}
 		return list;
 	}

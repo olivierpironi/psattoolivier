@@ -17,6 +17,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -24,10 +28,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import br.com.attornatus.olivierpironi.domain.endereco.CadastroEndereco;
 import br.com.attornatus.olivierpironi.domain.endereco.DetalhaEndereco;
 import br.com.attornatus.olivierpironi.domain.endereco.Endereco;
-import br.com.attornatus.olivierpironi.domain.exception.EnderecoNaoCadastrado;
+import br.com.attornatus.olivierpironi.domain.exception.EnderecoNaoCadastradoException;
 import br.com.attornatus.olivierpironi.domain.exception.PessoaNaoEncontradaException;
 import br.com.attornatus.olivierpironi.domain.pessoa.AtualizarPessoa;
 import br.com.attornatus.olivierpironi.domain.pessoa.DetalhaPessoa;
+import br.com.attornatus.olivierpironi.domain.pessoa.Pessoa;
 import br.com.attornatus.olivierpironi.domain.service.PessoaService;
 import br.com.attornatus.olivierpironi.util.DadosParaTesteFactory;
 
@@ -66,7 +71,7 @@ class PessoaControllerTest {
 		
 		assertThat(p1.getDetalhaPessoa(), is( http.getBody()));
 		
-		assertThat(p1.getPessoa().getId().toString()).isEqualTo(http.getHeaders().getLocation().toString()); //TODO MELHORAR ASSERTS
+		assertThat(p1.getPessoa().getId().toString()).hasToString(http.getHeaders().getLocation().toString()); //TODO MELHORAR ASSERTS
 	}
 
 	@Test
@@ -114,9 +119,6 @@ class PessoaControllerTest {
 		
 		// ação
 		ResponseEntity<DetalhaPessoa> http = controller.atualizarEnderecoPrincipal(idP1, dados);
-		System.err.println(p1.getDetalhaPessoa());
-		System.err.println(p1.getDetalhaPessoa());
-		System.err.println(p1.getDetalhaPessoa());
 		
 		// verificação
 		assertThat(HttpStatus.OK, is(http.getStatusCode()));
@@ -130,13 +132,13 @@ class PessoaControllerTest {
 		// cenário
 		Long idP1 = p1.getPessoa().getId();
 		AtualizarPessoa novosdados = new AtualizarPessoa(Optional.of("Joana"), Optional.of("03/03/1999"));
-		when(pessoaService.atualizar(idP1, novosdados)).thenThrow(new EnderecoNaoCadastrado("Endereço não cadastrado para o cliente."));
+		when(pessoaService.atualizar(idP1, novosdados)).thenThrow(new EnderecoNaoCadastradoException("Endereço não cadastrado para o cliente."));
 
 		//ação
         Throwable e = Assertions.catchThrowable(() -> controller.atualizarPessoa(idP1, novosdados));
 
         //verificação
-        assertThat(e).isInstanceOf(EnderecoNaoCadastrado.class).hasMessageContaining("Endereço não cadastrado para o cliente.");
+        assertThat(e).isInstanceOf(EnderecoNaoCadastradoException.class).hasMessageContaining("Endereço não cadastrado para o cliente.");
 
 	}
 
@@ -188,7 +190,25 @@ class PessoaControllerTest {
 		assertThat(HttpStatus.OK, is(http.getStatusCode()));
 		
 		assertThat(lista, is(http.getBody()));
-
 	}
-
+	
+	@Test
+	@DisplayName("Paginar todos os clientes com sucesso.")
+	void getPaginaClientes_PaginarClientes_ComSucesso() {
+		// cenário
+		List<Pessoa> lista = new ArrayList<Pessoa>();
+		lista.add(p1.getPessoa());
+		lista.add(p2.getPessoa());
+		Page<DetalhaPessoa> pagePessoa = new PageImpl<Pessoa>(lista).map(DetalhaPessoa::new);
+		Pageable pageable = PageRequest.of(1, 1);
+		when(pessoaService.getPaginaClientes(pageable)).thenReturn(pagePessoa);
+		
+		// ação
+		ResponseEntity<Page<DetalhaPessoa>> http = controller.paginasClientes(pageable);
+		
+		// verificação
+		assertThat(HttpStatus.OK, is(http.getStatusCode()));
+		
+		assertThat(pagePessoa, is(http.getBody()));
+	}
 }

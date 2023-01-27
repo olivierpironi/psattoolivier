@@ -46,10 +46,10 @@
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-            <groupId>org.h2</groupId>
-            <artifactId>h2</artifactId>
-            <version>1.0.20061103</version>
-        </dependency>
+			<groupId>org.h2</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.0.20061103</version>
+		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -86,17 +86,38 @@
 			<version>3.0.0</version>
 		</dependency>
 		<dependency>
-			<groupId>io.swagger.core.v3</groupId>
-			<artifactId>swagger-annotations</artifactId>
-			<version>2.2.8</version>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>3.0.0</version>
 		</dependency>
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-boot-starter</artifactId>
+			<version>3.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>4.0.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<!--		<dependency>-->
+		<!--			<groupId>io.swagger.core.v3</groupId>-->
+		<!--			<artifactId>swagger-annotations</artifactId>-->
+		<!--			<version>2.2.8</version>-->
+		<!--		</dependency>-->
+		<!--		<dependency>-->
+		<!--			<groupId>org.springdoc</groupId>-->
+		<!--			<artifactId>springdoc-openapi-ui</artifactId>-->
+		<!--			<version>1.6.14</version>-->
+		<!--		</dependency>-->
 	</dependencies>
 	<repositories>
-        <repository>
-            <id>Seasar</id>
-            <url>https://www.seasar.org/maven/maven2/</url>
-        </repository>
-    </repositories>
+		<repository>
+			<id>Seasar</id>
+			<url>https://www.seasar.org/maven/maven2/</url>
+		</repository>
+	</repositories>
 	<build>
 		<plugins>
 			<plugin>

@@ -17,12 +17,16 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import br.com.attornatus.olivierpironi.domain.endereco.CadastroEndereco;
 import br.com.attornatus.olivierpironi.domain.endereco.DetalhaEndereco;
 import br.com.attornatus.olivierpironi.domain.endereco.Endereco;
-import br.com.attornatus.olivierpironi.domain.exception.EnderecoNaoCadastrado;
+import br.com.attornatus.olivierpironi.domain.exception.EnderecoNaoCadastradoException;
 import br.com.attornatus.olivierpironi.domain.exception.EntidadeExisteException;
 import br.com.attornatus.olivierpironi.domain.pessoa.AtualizarPessoa;
 import br.com.attornatus.olivierpironi.domain.pessoa.DetalhaPessoa;
@@ -31,6 +35,7 @@ import br.com.attornatus.olivierpironi.infra.repository.PessoaRepository;
 import br.com.attornatus.olivierpironi.util.DadosParaTesteFactory;
 
 @ExtendWith(SpringExtension.class)
+@DisplayName("Testes para o serviço de pessoas")
 class PessoaServiceTest {
 	
 	@InjectMocks
@@ -76,7 +81,7 @@ class PessoaServiceTest {
 		List<DetalhaEndereco> endereco = pessoaService.cadastrarEndereco(id, novosDados);
 		
 		// verificação
-		assertThat(endereco.contains(new DetalhaEndereco(novoEndereco))).isEqualTo(true);
+		assertThat(endereco).contains(new DetalhaEndereco(novoEndereco));
 	}
 	
 	@Test
@@ -131,7 +136,7 @@ class PessoaServiceTest {
         Throwable e = Assertions.catchThrowable(() -> pessoaService.atualizarEnderecoPrincipal(id, dados));
 
         //verificação
-        assertThat(e).isInstanceOf(EnderecoNaoCadastrado.class).hasMessageContaining("Endereço não cadastrado para o cliente.");
+        assertThat(e).isInstanceOf(EnderecoNaoCadastradoException.class).hasMessageContaining("Endereço não cadastrado para o cliente.");
 	}
 
 	@Test
@@ -151,7 +156,6 @@ class PessoaServiceTest {
 		assertThat(dadosAtualizados.dataDeNascimento()).isEqualTo(p2.getDetalhaPessoa().dataDeNascimento());
 
 	}
-	
 
 	@Test
 	@DisplayName("Consultar pessoa por ID.")
@@ -195,6 +199,39 @@ class PessoaServiceTest {
 
         //verificação
         assertThat(e).isInstanceOf(NoSuchElementException.class);
+	}
+	
+	@Test
+	@DisplayName("Paginar todos os clientes.")
+	void getPaginaClientes_PaginarCliente_ComSucesso() {
+		// cenário
+		List<Pessoa> lista = new ArrayList<Pessoa>();
+		lista.add(p1.getPessoa());
+		lista.add(p2.getPessoa());
+		Pageable pageable = PageRequest.of(1, 1);
+		Page<Pessoa> pagePessoa = new PageImpl<Pessoa>(lista);
+		when(pessoaRepository.findAll(ArgumentMatchers.any(Pageable.class))).thenReturn(pagePessoa);
+		
+		// ação
+		Page<DetalhaPessoa> listaClientes = pessoaService.getPaginaClientes(pageable);
+		
+		// verificação
+		assertThat(listaClientes.getContent()).hasSize(2);
+	}
+	@Test
+	@DisplayName("Paginar todos quando não tem cliente.")
+	void getPaginaClientes_PaginarCliente_QuandoNaoTemCliente() {
+		// cenário
+		List<Pessoa> lista = new ArrayList<Pessoa>();
+		Pageable pageable = PageRequest.of(1, 1);
+		Page<Pessoa> pagePessoa = new PageImpl<Pessoa>(lista);
+		when(pessoaRepository.findAll(ArgumentMatchers.any(Pageable.class))).thenReturn(pagePessoa);
+		
+		// ação
+		Throwable e = Assertions.catchThrowable(() -> pessoaService.getPaginaClientes(pageable));
+		
+		// verificação
+		assertThat(e).isInstanceOf(NoSuchElementException.class);
 	}
 	
 }

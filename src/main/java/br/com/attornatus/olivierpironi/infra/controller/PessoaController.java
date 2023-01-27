@@ -4,6 +4,8 @@ import java.net.URI;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -31,7 +33,7 @@ public class PessoaController {
 
 	@PostMapping("/cadastro")
 	@Transactional
-	public ResponseEntity<DetalhaPessoa> criarPessoa(@RequestBody @Valid CadastroPessoa dados) { //TODO RETORNAR FIELDS DO ENDEREÇO QUE NÃO FORAM VALIDADOS
+	public ResponseEntity<DetalhaPessoa> criarPessoa(@RequestBody @Valid CadastroPessoa dados) {
 		var pessoa = pessoaService.cadastrar(dados);
 		return ResponseEntity.created(URI.create(pessoa.getId().toString())).body(new DetalhaPessoa(pessoa));
 	}
@@ -62,5 +64,10 @@ public class PessoaController {
 	@GetMapping("/listar-clientes")
 	public ResponseEntity<List<DetalhaPessoa>> listarClientes() {
 		return ResponseEntity.ok(pessoaService.getListaClientes());
+	}
+	
+	@GetMapping("/paginar-clientes")
+	public ResponseEntity<Page<DetalhaPessoa>> paginasClientes(Pageable pagima) {
+		return ResponseEntity.ok(pessoaService.getPaginaClientes(pagima));
 	}
 }

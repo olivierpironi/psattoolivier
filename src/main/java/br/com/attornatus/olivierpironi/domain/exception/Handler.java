@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-public class TratadorExceptions {
+public class Handler {
 
 	@ExceptionHandler(NoSuchElementException.class)
 	public ResponseEntity<Object> tratarNoSuchElement(NoSuchElementException e) {
@@ -27,8 +27,8 @@ public class TratadorExceptions {
 		return ResponseEntity.notFound().build();
 	}
 	
-	@ExceptionHandler(EnderecoNaoCadastrado.class)
-	public ResponseEntity<Object> enderecoNaoCadastrado(EnderecoNaoCadastrado e) {
+	@ExceptionHandler(EnderecoNaoCadastradoException.class)
+	public ResponseEntity<Object> enderecoNaoCadastradoException(EnderecoNaoCadastradoException e) {
 		return ResponseEntity.badRequest().body(new DetalhamentoException(e));
 	}
 	

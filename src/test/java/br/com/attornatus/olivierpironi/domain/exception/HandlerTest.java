@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.NoSuchElementException;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -12,18 +13,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 
-@WebMvcTest(TratadorExceptions.class)
-class TratadorExceptionsTest {
+@WebMvcTest(Handler.class)
+@DisplayName("Testes para o Handler")
+class HandlerTest {
 
 	@Autowired
-	TratadorExceptions handler;
+	Handler handler;
 
 	@Test
-	public void testTratarNoSuchElement() {
+	@DisplayName("Testa NoSuchElementException")
+	void tratarNoSuchElement() {
 		// cenário
 		NoSuchElementException exception = new NoSuchElementException();
 		
@@ -37,7 +39,8 @@ class TratadorExceptionsTest {
 	}
 	
 	@Test
-	public void tratarPessoaNaoEncontradaException() {
+	@DisplayName("Testa PessoaNaoEncontradaException")
+	void tratarPessoaNaoEncontradaException() {
 		// cenário
 		PessoaNaoEncontradaException exception = new PessoaNaoEncontradaException("");
 		
@@ -51,12 +54,13 @@ class TratadorExceptionsTest {
 	}
 	
 	@Test
-	public void EnderecoNaoCadastrado() {
+	@DisplayName("Testa EnderecoNaoCadastradoException")
+	void EnderecoNaoCadastrado() {
 		// cenário
-		EnderecoNaoCadastrado exception = new EnderecoNaoCadastrado("Endereço não cadastrado.");
+		EnderecoNaoCadastradoException exception = new EnderecoNaoCadastradoException("Endereço não cadastrado.");
 		
 		// ação
-		ResponseEntity<Object> response = handler.enderecoNaoCadastrado(exception);
+		ResponseEntity<Object> response = handler.enderecoNaoCadastradoException(exception);
 		
 		// verificação
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -65,7 +69,8 @@ class TratadorExceptionsTest {
 	}
 	
 	@Test
-	public void tratarEntidadeExisteException() {
+	@DisplayName("Testa EntidadeExisteException")
+	void tratarEntidadeExisteException() {
 		// cenário
 		EntidadeExisteException exception = new EntidadeExisteException("Endereço não cadastrado.");
 		
@@ -79,7 +84,8 @@ class TratadorExceptionsTest {
 	}
 	
 	@Test
-	public void tratarValidacao() {
+	@DisplayName("Testa MethodArgumentNotValidException")
+	void tratarValidacao() {
 		// cenário
 		BindingResult bindingResult = new BeanPropertyBindingResult(new Object(), "algo");
 		MethodParameter parameter= null;

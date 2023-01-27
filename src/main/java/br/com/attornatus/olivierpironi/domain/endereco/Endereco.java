@@ -17,7 +17,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode(of = {"logradouro", "cep", "numero", "cidade"})
+@EqualsAndHashCode(callSuper = false, exclude = "id")
 public class Endereco {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -27,6 +27,8 @@ public class Endereco {
 	private String numero;
 	private String cidade;
 
+
+	
 	public Endereco(@Valid CadastroEndereco dados) {
 		logradouro = dados.logradouro();
 		cep = dados.cep();

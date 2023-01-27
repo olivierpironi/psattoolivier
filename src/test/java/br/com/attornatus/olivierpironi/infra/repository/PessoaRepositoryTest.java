@@ -100,9 +100,7 @@ class PessoaRepositoryTest {
 		List<Pessoa> lista = repository.findAll();
 		
 		// verificação
-		assertThat(lista).isNotNull();
-		
-		assertThat(lista).isEqualTo(listaResultado);
+	 assertThat(lista).isEqualTo(listaResultado);
 	}
 	
 	@Test
