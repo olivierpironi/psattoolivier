@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,8 +24,6 @@ import br.com.attornatus.olivierpironi.domain.pessoa.CadastroPessoa;
 import br.com.attornatus.olivierpironi.domain.pessoa.DetalhaPessoa;
 import br.com.attornatus.olivierpironi.domain.pessoa.Pessoa;
 import br.com.attornatus.olivierpironi.infra.repository.PessoaRepository;
-import jakarta.validation.Valid;
-import net.jpountz.xxhash.XXHashFactory;
 
 @Service
 public class PessoaService {
@@ -62,11 +62,11 @@ public class PessoaService {
 
 	}
 
-	public int simularId(CadastroEndereco dados) {
-		XXHashFactory factory = XXHashFactory.fastestInstance();
-		byte[] bytes = (dados.logradouro() + dados.cep() + dados.numero() + dados.cidade()).getBytes();
-		return factory.hash32().hash(bytes, 0, bytes.length, 0);
-	}
+//	public int simularId(CadastroEndereco dados) {
+//		XXHashFactory factory = XXHashFactory.fastestInstance();
+//		byte[] bytes = (dados.logradouro() + dados.cep() + dados.numero() + dados.cidade()).getBytes();
+//		return factory.hash32().hash(bytes, 0, bytes.length, 0);
+//	}
 
 	public List<DetalhaEndereco> cadastrarEndereco(Long id, @Valid CadastroEndereco dados) {
 		Optional<Pessoa> pessoaOptional = pessoaRepository.findById(id);

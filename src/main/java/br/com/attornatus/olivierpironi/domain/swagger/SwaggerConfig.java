@@ -19,15 +19,15 @@ public class SwaggerConfig {
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("br.com.attornatus.domain.controller"))
-                .paths(PathSelectors.any())
+                .apis(RequestHandlerSelectors.basePackage("br.com.attornatus.infra.controller"))
+                .paths(PathSelectors.ant("/**"))
                 .build()
                 .apiInfo(metaData());
     }
 
     private ApiInfo metaData() {
         return new ApiInfoBuilder()
-                .title("Projeto PS Attornatus - Olivier pironi")
+                .title("Projeto Gerenciador de Cadastros - por Olivier Pironi")
                 .description("Documentão da API de gestão de cadastro")
                 .version("1.0")
                 .contact(new Contact("Olivier Pironi", "https://github.com/olivierpironi", "pironiolivier@gmail.com"))

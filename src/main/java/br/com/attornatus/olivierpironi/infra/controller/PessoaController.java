@@ -3,10 +3,13 @@ package br.com.attornatus.olivierpironi.infra.controller;
 import java.net.URI;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,8 +24,6 @@ import br.com.attornatus.olivierpironi.domain.pessoa.AtualizarPessoa;
 import br.com.attornatus.olivierpironi.domain.pessoa.CadastroPessoa;
 import br.com.attornatus.olivierpironi.domain.pessoa.DetalhaPessoa;
 import br.com.attornatus.olivierpironi.domain.service.PessoaService;
-import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/pessoa")

@@ -112,7 +112,6 @@ class PessoaServiceTest {
 		Long id = pessoa.getId();
 		CadastroEndereco dados = new CadastroEndereco("end", "end", "end", "end");
 		Endereco endereco = new Endereco(dados);
-		endereco.setId(pessoaService.simularId(dados));
 		when(pessoaRepository.findById(ArgumentMatchers.anyLong())).thenReturn(Optional.of(pessoa));
 		pessoa.getListaDeEnderecos().add(endereco);
 		// ação
@@ -130,7 +129,6 @@ class PessoaServiceTest {
 		Long id = pessoa.getId();
 		CadastroEndereco dados = new CadastroEndereco("end", "end", "end", "end");
 		Endereco endereco = new Endereco(dados);
-		endereco.setId(pessoaService.simularId(dados));
 		when(pessoaRepository.findById(ArgumentMatchers.anyLong())).thenReturn(Optional.of(pessoa));
 		//ação
         Throwable e = Assertions.catchThrowable(() -> pessoaService.atualizarEnderecoPrincipal(id, dados));
