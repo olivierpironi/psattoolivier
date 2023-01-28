@@ -1,6 +1,20 @@
+✅ Criar uma pessoa;
+✅ Editar uma pessoa;
+✅ Consultar uma pessoa;
+✅ Listar pessoas;
+✅ Criar endereço para pessoa;
+✅ Listar endereços da pessoa;
+✅ Poder informar qual endereço é o principal da pessoa ;
+
+
+✅ Testes Unitários;
+✅ Documentação com Swagger.
+
+
+
 🛠️Proxímas etapas:
  - Testes de integração;
- - Documentação.
+ 
 
  📁 Arquivo JSON para consumo da API
 
