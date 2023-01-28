@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -28,6 +27,8 @@ import br.com.attornatus.olivierpironi.infra.repository.PessoaRepository;
 @Service
 public class PessoaService {
 
+	private static final PessoaNaoEncontradaException PESSOA_NAO_ENCONTRADA_EXCEPTION = new PessoaNaoEncontradaException("Pessoa com o ID especificado não encontrada");
+
 	@Autowired
 	private PessoaRepository pessoaRepository;
 
@@ -40,62 +41,50 @@ public class PessoaService {
 	}
 
 	public DetalhaPessoa consultarById(Long id) {
-		return new DetalhaPessoa(pessoaRepository.findById(id).get());
+		Pessoa pessoa = pessoaRepository.findById(id)
+				.orElseThrow(() -> PESSOA_NAO_ENCONTRADA_EXCEPTION);
+		return new DetalhaPessoa(pessoa);
 	}
 	
 	public DetalhaPessoa atualizar(Long id, AtualizarPessoa dados) {
-		Pessoa pessoa = pessoaRepository.findById(id).orElseThrow(() -> new PessoaNaoEncontradaException("Pessoa com o ID especificado não encontrada"));
+		Pessoa pessoa = pessoaRepository.findById(id)
+				.orElseThrow(() -> PESSOA_NAO_ENCONTRADA_EXCEPTION);
 		dados.nome().ifPresent(pessoa::setNome);
 		dados.dataNascimento().ifPresent(d -> pessoa.setDataNascimento(LocalDate.parse(d, formato)));
 		return new DetalhaPessoa(pessoa);
 	}
 	
 	public DetalhaPessoa atualizarEnderecoPrincipal(Long id, @Valid CadastroEndereco dados) {
-		Pessoa pessoa = pessoaRepository.findById(id).orElseThrow(() -> new PessoaNaoEncontradaException("Pessoa com o ID especificado não encontrada"));
-		Optional<Endereco> endereco = pessoa.getListaDeEnderecos().stream().filter(e -> e.equals(new Endereco(dados))).findFirst();
-		if (endereco.isPresent()) {
-			pessoa.setEnderecoPrincipal(endereco.get());
+		Pessoa pessoa = pessoaRepository.findById(id)
+				.orElseThrow(() -> PESSOA_NAO_ENCONTRADA_EXCEPTION);
+		Endereco endereco = pessoa.getListaDeEnderecos()
+        .stream()
+        .filter(e -> e.equals(new Endereco(dados)))
+        .findFirst()
+        .orElseThrow(() -> new EnderecoNaoCadastradoException("Endereço não cadastrado para o cliente."));
+			pessoa.setEnderecoPrincipal(endereco);
 			return new DetalhaPessoa(pessoa);
-		} else {
-			throw new EnderecoNaoCadastradoException("Endereço não cadastrado para o cliente.");
-		}
-
 	}
 
-//	public int simularId(CadastroEndereco dados) {
-//		XXHashFactory factory = XXHashFactory.fastestInstance();
-//		byte[] bytes = (dados.logradouro() + dados.cep() + dados.numero() + dados.cidade()).getBytes();
-//		return factory.hash32().hash(bytes, 0, bytes.length, 0);
-//	}
-
 	public List<DetalhaEndereco> cadastrarEndereco(Long id, @Valid CadastroEndereco dados) {
-		Optional<Pessoa> pessoaOptional = pessoaRepository.findById(id);
-		if(pessoaOptional.isEmpty()) {throw new NoSuchElementException();}
-		Pessoa pessoa = pessoaOptional.get();
+		Pessoa pessoa = pessoaRepository.findById(id).orElseThrow(NoSuchElementException::new);
 		List<Endereco> lista = pessoa.getListaDeEnderecos();
-		Endereco e = new Endereco(dados);
-		 
-			if (!lista.contains(e)) {
-				lista.add(e);
-				return lista.stream().map(DetalhaEndereco::new).toList();
-			}
-			throw new EntidadeExisteException("Endereço já cadastrado para este cliente.");
+		Endereco novoEndereco = new Endereco(dados);
+		if (lista.contains(novoEndereco)) {throw new EntidadeExisteException("Endereço já cadastrado para este cliente.");}
+		lista.add(novoEndereco);
+		return lista.stream().map(DetalhaEndereco::new).toList();
 		}
 			
 	
 	public List<DetalhaPessoa> getListaClientes() {
 		List<DetalhaPessoa> list = pessoaRepository.findAll().stream().map(DetalhaPessoa::new).toList();
-		if(list.isEmpty()) {
-			throw new NoSuchElementException();
-		}
+		if(list.isEmpty()) {throw new NoSuchElementException();}
 		return list;
 	}
 	
 	public Page<DetalhaPessoa> getPaginaClientes(Pageable pagina) {
 		Page<DetalhaPessoa> list = pessoaRepository.findAll(pagina).map(DetalhaPessoa::new);
-		if(list.isEmpty()) {
-			throw new NoSuchElementException();
-		}
+		if(list.isEmpty()) {throw new NoSuchElementException();}
 		return list;
 	}
 

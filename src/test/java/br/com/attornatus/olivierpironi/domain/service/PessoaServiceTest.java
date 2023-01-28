@@ -128,7 +128,6 @@ class PessoaServiceTest {
 		Pessoa pessoa = p1.getPessoa();
 		Long id = pessoa.getId();
 		CadastroEndereco dados = new CadastroEndereco("end", "end", "end", "end");
-		Endereco endereco = new Endereco(dados);
 		when(pessoaRepository.findById(ArgumentMatchers.anyLong())).thenReturn(Optional.of(pessoa));
 		//ação
         Throwable e = Assertions.catchThrowable(() -> pessoaService.atualizarEnderecoPrincipal(id, dados));

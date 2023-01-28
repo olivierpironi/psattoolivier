@@ -7,7 +7,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,16 +44,14 @@ class PessoaControllerTest {
 	@Mock
 	private static PessoaService pessoaService;
 
-	private static DadosParaTesteFactory factory = new DadosParaTesteFactory();
 	private static DadosParaTesteFactory p1;
 	private static DadosParaTesteFactory p2;
-
+	
 	@BeforeEach
 	public void setup() {
 		MockitoAnnotations.openMocks(this);
-
-		p1 = factory.criarPessoa1();
-		p2 = factory.criarPessoa2();
+		p1 = new DadosParaTesteFactory().criarPessoa1();
+		p2 = new DadosParaTesteFactory().criarPessoa2();
 	}
 	
 	@Test
@@ -71,7 +68,7 @@ class PessoaControllerTest {
 		
 		assertThat(p1.getDetalhaPessoa(), is( http.getBody()));
 		
-		assertThat(p1.getPessoa().getId().toString()).hasToString(http.getHeaders().getLocation().toString()); //TODO MELHORAR ASSERTS
+		assertThat(p1.getPessoa().getId().toString()).hasToString(http.getHeaders().getLocation().toString());
 	}
 
 	@Test
@@ -86,28 +83,11 @@ class PessoaControllerTest {
 		ResponseEntity<List<DetalhaEndereco>> http = controller.cadastrarEndereco(id, p1.getCadastroEndereco());
 
 		// verificação
-		assertThat(HttpStatus.CREATED, is(http.getStatusCode()));
+		assertThat(http.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 		
-		assertThat(lista, is(http.getBody()));
+		assertThat(lista).isEqualTo(http.getBody());
 	}
 
-	@Test
-	@DisplayName("Atualizar pessoa pessoa com sucesso.")
-	void atualizarPessoa_AtualizarPessoa_ComSucesso() {
-		// cenário
-		Long idP1 = p1.getPessoa().getId();
-		AtualizarPessoa novosdados = new AtualizarPessoa(Optional.of("Joana"), Optional.of("03/03/1999")); //TODO atualizar isso e também os asserts
-		when(pessoaService.atualizar(idP1, novosdados)).thenReturn(p2.getDetalhaPessoa());
-
-		// ação
-		ResponseEntity<DetalhaPessoa> http = controller.atualizarPessoa(idP1, novosdados);
-
-		// verificação
-		assertThat(HttpStatus.OK, is(http.getStatusCode()));
-		assertThat(p2.getDetalhaPessoa(), is(http.getBody()));
-
-	}
-	
 	@Test
 	@DisplayName("Atualizar endereço principal de uma pessoa com sucesso.")
 	void atualizarPessoa_AtualizarEndereçoPrincipal_ComSucesso() {
@@ -121,17 +101,37 @@ class PessoaControllerTest {
 		ResponseEntity<DetalhaPessoa> http = controller.atualizarEnderecoPrincipal(idP1, dados);
 		
 		// verificação
-		assertThat(HttpStatus.OK, is(http.getStatusCode()));
-		assertThat(new DetalhaPessoa(p1.getPessoa()), is(http.getBody()));
+		assertThat(http.getStatusCode()).isEqualTo(HttpStatus.OK);
+		
+		assertThat(new DetalhaPessoa(p1.getPessoa())).isEqualTo(http.getBody());
 		
 	}
+	
+	@Test
+	@DisplayName("Atualizar pessoa pessoa com sucesso.")
+	void atualizarPessoa_AtualizarPessoa_ComSucesso() {
+		// cenário
+		Long idP1 = p1.getPessoa().getId();
+		AtualizarPessoa novosdados = p2.getDadosParaAtualizar(); 
+		when(pessoaService.atualizar(idP1, novosdados)).thenReturn(p2.getDetalhaPessoa());
+
+		// ação
+		ResponseEntity<DetalhaPessoa> http = controller.atualizarPessoa(idP1, novosdados);
+
+		// verificação
+		assertThat(http.getStatusCode()).isEqualTo(HttpStatus.OK);
+		
+		assertThat(p2.getDetalhaPessoa()).isEqualTo(http.getBody());
+
+	}
+	
 
 	@Test
 	@DisplayName("Atualizar pessoa com endereço não cadastrado.")
 	void atualizarPessoa_AtualizarPessoa_ComEnderecoNaoCadastrado() {
 		// cenário
 		Long idP1 = p1.getPessoa().getId();
-		AtualizarPessoa novosdados = new AtualizarPessoa(Optional.of("Joana"), Optional.of("03/03/1999"));
+		AtualizarPessoa novosdados = p2.getDadosParaAtualizar(); 
 		when(pessoaService.atualizar(idP1, novosdados)).thenThrow(new EnderecoNaoCadastradoException("Endereço não cadastrado para o cliente."));
 
 		//ação
@@ -147,7 +147,7 @@ class PessoaControllerTest {
 	void atualizarPessoa_AtualizarPessoa_NaoCadastrada() {
 		// cenário
 		Long idP1 = p1.getPessoa().getId();
-		AtualizarPessoa novosdados = new AtualizarPessoa(Optional.of("Joana"), Optional.of("03/03/1999"));
+		AtualizarPessoa novosdados = p2.getDadosParaAtualizar();
 		when(pessoaService.atualizar(idP1, novosdados)).thenThrow(new PessoaNaoEncontradaException("Pessoa com o ID especificado não encontrada"));
 
 		// ação
@@ -169,9 +169,9 @@ class PessoaControllerTest {
 		ResponseEntity<DetalhaPessoa> http = controller.consultarById(idP1);
 
 		// verificação
-		assertThat(HttpStatus.OK, is(http.getStatusCode()));
+		assertThat(http.getStatusCode()).isEqualTo(HttpStatus.OK);
 		
-		assertThat(p1.getDetalhaPessoa(), is( http.getBody()));
+		assertThat(p1.getDetalhaPessoa()).isEqualTo( http.getBody());
 	}
 
 	@Test
@@ -187,9 +187,9 @@ class PessoaControllerTest {
 		ResponseEntity<List<DetalhaPessoa>> http = controller.listarClientes();
 
 		// verificação
-		assertThat(HttpStatus.OK, is(http.getStatusCode()));
+		assertThat(http.getStatusCode()).isEqualTo(HttpStatus.OK);
 		
-		assertThat(lista, is(http.getBody()));
+		assertThat(lista).isEqualTo(http.getBody());
 	}
 	
 	@Test
@@ -207,8 +207,8 @@ class PessoaControllerTest {
 		ResponseEntity<Page<DetalhaPessoa>> http = controller.paginasClientes(pageable);
 		
 		// verificação
-		assertThat(HttpStatus.OK, is(http.getStatusCode()));
+		assertThat(http.getStatusCode()).isEqualTo(HttpStatus.OK);
 		
-		assertThat(pagePessoa, is(http.getBody()));
+		assertThat(pagePessoa).isEqualTo(http.getBody());
 	}
 }

@@ -24,10 +24,11 @@ import br.com.attornatus.olivierpironi.domain.pessoa.AtualizarPessoa;
 import br.com.attornatus.olivierpironi.domain.pessoa.CadastroPessoa;
 import br.com.attornatus.olivierpironi.domain.pessoa.DetalhaPessoa;
 import br.com.attornatus.olivierpironi.domain.service.PessoaService;
+import br.com.attornatus.olivierpironi.domain.swagger.PessoaControllerSwagger;
 
 @RestController
 @RequestMapping("/pessoa")
-public class PessoaController {
+public class PessoaController implements PessoaControllerSwagger{
 
 	@Autowired
 	PessoaService pessoaService;

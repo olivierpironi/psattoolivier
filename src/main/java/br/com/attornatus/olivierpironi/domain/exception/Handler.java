@@ -8,8 +8,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import br.com.attornatus.olivierpironi.domain.swagger.HandlerSwagger;
+
 @RestControllerAdvice
-public class Handler {
+public class Handler implements HandlerSwagger{
 
 	@ExceptionHandler(NoSuchElementException.class)
 	public ResponseEntity<Object> tratarNoSuchElement(NoSuchElementException e) {

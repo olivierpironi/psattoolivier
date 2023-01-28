@@ -1,4 +1,4 @@
-package br.com.attornatus.olivierpironi.domain.swagger;
+             package br.com.attornatus.olivierpironi.domain.swagger;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +19,7 @@ public class SwaggerConfig {
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("br.com.attornatus.infra.controller"))
+                .apis(RequestHandlerSelectors.any())
                 .paths(PathSelectors.ant("/**"))
                 .build()
                 .apiInfo(metaData());
