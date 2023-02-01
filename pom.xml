@@ -11,7 +11,7 @@
 	<artifactId>olivierpironi</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>olivierpironi</name>
-	<description>Projeto de consulta de pessoas para o processo seletivo da Attornatus, desenvolvido por Olivier Pironi</description>
+	<description>desenvolvido por Olivier Pironi</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
@@ -20,7 +20,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
@@ -51,16 +50,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-engine</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.assertj</groupId>
-			<artifactId>assertj-core</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger-ui</artifactId>
 			<version>2.9.2</version>
@@ -76,7 +65,6 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
